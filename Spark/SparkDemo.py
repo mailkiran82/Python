@@ -7,7 +7,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct,avg,stddev
 
 spark = SparkSession.builder.appName('ops').getOrCreate()
-df = spark.read.csv('test.csv',inferSchema=True, header=True)
+df = spark.read.csv('TestData.csv',inferSchema=True, header=True)
 
 #df.printSchema()
 #df.show()
