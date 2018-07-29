@@ -30,7 +30,7 @@ df = spark.read.csv('test.csv',inferSchema=True, header=True)
 
 #print(row.asDict()['name'])
 
-df.groupBy('name').count().show()
+#df.groupBy('name').count().show()
 df.agg({'name':'count'}).show()
 
 df.select(countDistinct('name').alias('mycount')).show()
