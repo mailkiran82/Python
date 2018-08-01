@@ -7,6 +7,13 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct,avg,stddev
 
 import boto3
+import timeit
+
+print(timeit.timeit('''
+import boto3
+s3 = boto3.resource('s3')
+s3.Object('mailkiran82','SparkData/TestData.csv').download_file('./TD_Download.csv')
+''',number=1))
 
 s3 = boto3.resource('s3')
 s3.Object('mailkiran82','SparkData/TestData.csv').download_file('./TD.csv')
