@@ -15,5 +15,7 @@ RUN pip3 install pandas
 RUN pip3 install smart_open
 
 COPY SparkTest.py /opt/SparkTest.py
+COPY TestSparkTest.py /opt/TestSparkTest.py
+COPY run.ksh /opt/run.ksh
 
-ENTRYPOINT python3 /opt/SparkTest.py
+ENTRYPOINT /bin/sh /opt/run.ksh ${*}
