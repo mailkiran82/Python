@@ -1,13 +1,13 @@
 #!python3 SparkTest.py
 import findspark
-findspark.init('/home/ubuntu/spark-2.1.1-bin-hadoop2.7')
+findspark.init('/usr/local/bin/spark-2.1.1-bin-hadoop2.7')
 import pyspark
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct,avg,stddev
 from pyspark.sql.types import StructType,StructField,IntegerType,StringType
 
-import boto3
+#import boto3
 import timeit
 import pandas as pd
 import io
@@ -26,6 +26,7 @@ with so.smart_open('s3://mailkiran82/SparkData/TestData.csv') as fin:
             rec=pd.DataFrame([list(line.decode('utf-8').lstrip().rstrip().split(','))],columns=headerList)
             pdf=pd.concat([pdf,rec],ignore_index=True)
 
+print("smart_open time:")
 print(timeit.timeit('''
 import pandas as pd
 import smart_open as so
@@ -46,12 +47,29 @@ with so.smart_open('s3://mailkiran82/SparkData/TestData.csv') as fin:
 #print(pdf.head())
 #print(pdf.info())
 
-#s3 = boto3.client('s3')
-#res = s3.get_object(Bucket='mailkiran82',Key='SparkData/TestData.csv')
-#text = res['Body'].read().decode('utf-8')
-#pdf1 = pd.read_csv(io.StringIO(text))
+print("boto3 => dataframe:")
+print(timeit.timeit('''
+import boto3
+import pandas as pd
+import io
+s3 = boto3.client('s3')
+res = s3.get_object(Bucket='mailkiran82',Key='SparkData/TestData.csv')
+text = res['Body'].read().decode('utf-8')
+pdf1 = pd.read_csv(io.StringIO(text))
+''',number=1))
 #print(pdf1.head())
 #print(pdf1.info())
+
+print("boto3 => file => dataframe:")
+print(timeit.timeit('''
+import boto3
+import pandas as pd
+s3 = boto3.resource('s3')
+s3.Object('mailkiran82','SparkData/TestData.csv').download_file('./TD.csv')
+pdf2 = pd.read_csv('TD.csv')
+''',number=1))
+#print(pdf2.head())
+#print(pdf2.info())
 
 #populate Spark dataframe from pandas dataframe
 spark = SparkSession.builder.appName('ops').getOrCreate()
@@ -75,3 +93,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
